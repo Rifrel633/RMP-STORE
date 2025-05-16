@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RMP STORE - Accueil</title>
+  <title>RMP STORE</title>
   <link rel="stylesheet" href="style.css" />
   <script defer src="js/menu.js"></script>
 </head>
@@ -14,9 +14,11 @@
       <nav>
         <button class="menu-toggle" id="menu-toggle">☰</button>
         <ul class="nav-links" id="nav-links">
-          <li><a href="#">Accueil</a></li>
-          <li><a href="#">Produits</a></li>
-          <li><a href="#">Connexion</a></li>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="connexion/connexion.html">Connexion</a></li>
+          <li><a href="inscription/inscription.html">Inscription</a></li>
+          <li><a href="ajouter-produit/ajouter-produit.html">Ajouter un produit</a></li>
+          <li><a href="panier.html">Panier</a></li>
         </ul>
       </nav>
     </div>
@@ -24,21 +26,14 @@
   <main class="container">
     <section class="hero">
       <h2>Bienvenue sur RMP STORE</h2>
-      <p>Votre marketplace pour acheter et vendre tout type de produit</p>
+      <p>Achetez et vendez tous types de produits en CFA</p>
     </section>
     <section class="products">
-      <h3>Produits en vedette</h3>
-      <div class="product-grid">
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200" alt="Produit 1" />
-          <h4>Produit Exemple</h4>
-          <p>5 000 FCFA</p>
-        </div>
-      </div>
+      <h3>Produits</h3>
+      <div class="product-grid" id="product-list"></div>
     </section>
   </main>
-  <footer>
-    <p>&copy; 2025 RMP STORE - Tous droits réservés</p>
-  </footer>
+  <footer><p>&copy; 2025 RMP STORE</p></footer>
+  <script src="js/index.js"></script>
 </body>
 </html>
