@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profil Vendeur - RMP STORE</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .dashboard {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #0050b3;
+    }
+      table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #00c3ff;
+      color: white;
+    }
+    button {
+      background-color: #00c3ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0094cc;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+    .message-section {
+      margin-top: 20px;
+    }
+    .messages-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 4px;
+      background: #f9f9f9;
+      margin-bottom: 10px;
+    }
+    .message-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: #e0f0ff;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1 class="logo">RMP STORE</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="profil.html">Mon Profil</a></li>
+        <li><a href="panier.html" id="cart-count">Panier (0)</a></li>
+        <li><a href="#" id="logout-link">Déconnexion</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="dashboard">
+    <h2>Bienvenue, <span id="username"></span></h2>
+
+    <section>
+      <h3>Mes produits en vente</h3>
+      <table id="products-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prix (FCFA)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Produits du vendeur -->
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3>Mes commandes</h3>
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Client</th>
+            <th>Quantité</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Commandes -->
+        </tbody>
+      </table>
+    </section>
+
+    <section class="message-section">
+      <h3>Messagerie</h3>
+      <div class="messages-list" id="messages-list">
+        <!-- Messages -->
+      </div>
+      <textarea id="message-input" placeholder="Écrire un message..."></textarea>
+      <button id="send-message-btn">Envoyer</button>
+    </section>
+  </div>
+</main>
+
+<script>
+  const username = localStorage.getItem('connectedUser');
+  if (!username) {
+    alert('Veuillez vous connecter pour accéder à votre profil.');
+    window.location.href = 'connexion/connexion.html';
+  }
+
+  document.getElementById('username').textContent = username;
+
+  // Déconnexion
+  document.getElementById('logout-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('connectedUser');
+    window.location.href = 'index.html';
+  });
+
+  // Récupérer produits et filtrer ceux du vendeur
+  function getProducts() {
+    return JSON.parse(localStorage.getItem('rmpstore_products') || '[]');
+  }
+
+  function saveProducts(products) {
+    localStorage.setItem('rmpstore_products', JSON.stringify(products));
+  }
+
+  function getOrders() {
+    return JSON.parse(localStorage.getItem('rmpstore_orders') || '[]');
+  }
+
+  function saveOrders(orders) {
+    localStorage.setItem('rmpstore_orders', JSON.stringify(orders));
+  }
+
+  // Afficher produits du vendeur
+  function displayProducts() {
+    const allProducts = getProducts();
+    const products = allProducts.filter(p => p.owner === username);
+    const tbody = document.querySelector('#products-table tbody');
+    tbody.innerHTML = '';
+
+    if (products.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3">Vous n\'avez aucun produit en vente.</td></tr>';
+      return;
+    }
+
+    products.forEach(product => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${product.name}</td>
+        <td>${product.price.toLocaleString('fr-FR')}</td>
+        <td>
+          <button class="edit-btn">Modifier</button>
+          <button class="delete-btn">Supprimer</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Gestion des boutons modifier / supprimer
+    tbody.querySelectorAll('.edit-btn').forEach((btn, i) => {
+      btn.addEventListener('click', () => editProduct(i));
+    });
+    tbody.querySelectorAll('.delete-btn').forEach((btn, i) => {
+      btn.addEventListener('click', () => deleteProduct(i));
+    });
+  }
+
+  function editProduct(i) {
+    const allProducts = getProducts();
+    const products = allProducts.filter(p => p.owner === username);
+    const product = products[i];
+    const newName = prompt('Nouveau nom:', product.name);
+    const newPrice = prompt('Nouveau prix (FCFA):', product.price);
+    if (!newName || !newPrice) return;
+
+    // Trouver index global
+    const globalIndex = allProducts.findIndex(p => p.name === product.name && p.owner === username);
+    allProducts[globalIndex].name = newName.trim();
+    allProducts[globalIndex].price = parseInt(newPrice);
+    saveProducts(allProducts);
+    displayProducts();
+  }
+
+  function deleteProduct(i) {
+    if (!confirm('Confirmer la suppression du produit ?')) return;
+    const allProducts = getProducts();
+    const products = allProducts.filter(p => p.owner === username);
+    const product = products[i];
+    const globalIndex = allProducts.findIndex(p => p.name === product.name && p.owner === username);
+    allProducts.splice(globalIndex, 1);
+    saveProducts(allProducts);
+    displayProducts();
+  }
+
+  // Afficher commandes du vendeur
+  function displayOrders() {
+    const orders = getOrders();
+    const products = getProducts();
+    const tbody = document.querySelector('#orders-table tbody');
+    tbody.innerHTML = '';
+
+    const sellerOrders = orders.filter(order => {
+      const product = products.find(p => p.name === order.productName && p.owner === username);
+      return !!product;
+    });
+
+    if (sellerOrders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4">Aucune commande reçue.</td></tr>';
+      return;
+    }
+
+    sellerOrders.forEach(order => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${order.productName}</td>
+        <td>${order.clientName}</td>
+        <td>${order.quantity}</td>
+        <td>${new Date(order.date).toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Messagerie simple
+  function getMessages() {
+    return JSON.parse(localStorage.getItem('rmpstore_messages_' + username) || '[]');
+  }
+
+  function saveMessages(messages) {
+    localStorage.setItem('rmpstore_messages_' + username, JSON.stringify(messages));
+  }
+
+  function displayMessages() {
+    const messages = getMessages();
+    const container = document.getElementById('messages-list');
+    container.innerHTML = '';
+
+    if (messages.length === 0) {
+      container.textContent = 'Aucun message.';
+      return;
+    }
+
+    messages.forEach(msg => {
+      const div = document.createElement('div');
+      div.classList.add('message-item');
+      div.textContent = `[${new Date(msg.date).toLocaleString()}] ${msg.from}: ${msg.text}`;
+      container.appendChild(div);
+    });
+  }
+
+  document.getElementById('send-message-btn').addEventListener('click', () => {
+    const input = document.getElementById('message-input');
+    const text = input.value.trim();
+    if (!text) {
+      alert('Écrire un message.');
+      return;
+    }
+    const messages = getMessages();
+    messages.push({ from: username, text, date: new Date().toISOString() });
+    saveMessages(messages);
+    input.value = '';
+    displayMessages();
+  });
+
+  displayProducts();
+  displayOrders();
+  displayMessages();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Paiement sécurisé - RMP STORE</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 40px;
+      text-align: center;
+    }
+    h2 {
+      color: #0050b3;
+    }
+    #summary {
+      margin: 20px 0;
+      font-size: 18px;
+    }
+    button {
+      padding: 15px 30px;
+      background: #00c3ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    button:hover {
+      background: #0094cc;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Paiement via Flutterwave</h2>
+  <div id="summary">Chargement du panier...</div>
+  <button onclick="makePayment()">Payer maintenant</button>
+
+  <script src="js/paiement.js"></script>
+</body>
+</html>
