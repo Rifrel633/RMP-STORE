@@ -8,61 +8,37 @@
   <script defer src="js/menu.js"></script>
 </head>
 <body>
-
   <header>
     <div class="container header-flex">
       <h1 class="logo">RMP STORE</h1>
       <nav>
         <button class="menu-toggle" id="menu-toggle">☰</button>
         <ul class="nav-links" id="nav-links">
-          <li><a href="index.html">Accueil</a></li>
-          <li><a href="ajouter-produit/ajouter-produit.html">Ajouter un produit</a></li>
-          <li><a href="connexion/connexion.html">Connexion</a></li>
-          <li><a href="inscription/inscription.html">Inscription</a></li>
-          <li><a href="panier.html">Panier</a></li>
+          <li><a href="#">Accueil</a></li>
+          <li><a href="#">Produits</a></li>
+          <li><a href="#">Connexion</a></li>
         </ul>
       </nav>
     </div>
   </header>
-
   <main class="container">
     <section class="hero">
       <h2>Bienvenue sur RMP STORE</h2>
       <p>Votre marketplace pour acheter et vendre tout type de produit</p>
     </section>
-
     <section class="products">
       <h3>Produits en vedette</h3>
-      <div class="product-grid" id="product-list">
-        <!-- Produits injectés dynamiquement -->
+      <div class="product-grid">
+        <div class="product-card">
+          <img src="https://via.placeholder.com/200" alt="Produit 1" />
+          <h4>Produit Exemple</h4>
+          <p>5 000 FCFA</p>
+        </div>
       </div>
     </section>
   </main>
-
   <footer>
     <p>&copy; 2025 RMP STORE - Tous droits réservés</p>
   </footer>
-
-  <script>
-    // Exemple d'injection produits
-    const produits = JSON.parse(localStorage.getItem("rmpstore_products") || "[]");
-    const container = document.getElementById("product-list");
-
-    if (produits.length === 0) {
-      container.innerHTML = "<p>Aucun produit disponible pour le moment.</p>";
-    } else {
-      produits.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${p.image}" alt="${p.name}" />
-          <h4>${p.name}</h4>
-          <p>${parseInt(p.price).toLocaleString("fr-FR")} FCFA</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-  </script>
-
 </body>
 </html>
